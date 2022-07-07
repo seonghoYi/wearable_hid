@@ -17,7 +17,6 @@ add_executable(${PRJ_NAME}
 
   hw/driver/imu/mpu6050.cpp
   hw/driver/imu/MadgwickAHRS.cpp
-  hw/driver/imu/imu.cpp
   hw/driver/imu.cpp
 
 
