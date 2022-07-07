@@ -12,14 +12,35 @@
 #define _DEF_LED2             1
 #define _DEF_LED3             2
 
+#define _DEF_GPIO1            0
+#define _DEF_GPIO2            1
+#define _DEF_GPIO3            2
+#define _DEF_GPIO4            3
+
 #define _DEF_UART1            0
 #define _DEF_UART2            1
 
 #define _DEF_I2C1		          0
 #define _DEF_I2C2		          1
 
-#define _DEF_LCD1	          	0
-#define _DEF_LCD2		          1
+#define _DEF_TCA9548A1        0    
+#define _DEF_TCA9548A2        1
+#define _DEF_TCA9548A3        2
+#define _DEF_TCA9548A4        3
+#define _DEF_TCA9548A5        4
+#define _DEF_TCA9548A6        5
+#define _DEF_TCA9548A7        6
+#define _DEF_TCA9548A8        7
+
+#define _DEF_SPI1             0
+#define _DEF_SPI2             1         
+
+
+#define _DEF_MPU6050_1        0
+#define _DEF_MPU6050_2        1
+#define _DEF_MPU6050_3        2
+#define _DEF_MPU6050_4        3
+#define _DEF_MPU6050_5        4
 
 
 #define _DEF_INPUT            0
