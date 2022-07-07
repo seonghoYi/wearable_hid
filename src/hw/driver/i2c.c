@@ -44,31 +44,31 @@ bool i2cBegin(uint8_t ch, uint32_t freq_khz)
 	switch(ch)
 	{
 		case _DEF_I2C1:
-			i2c_tbl[_DEF_I2C1].p_hi2c = i2c0;
+			i2c_tbl[_DEF_I2C1].p_hi2c = i2c1;
 			i2c_init(i2c_tbl[_DEF_I2C1].p_hi2c, freq_khz * 1000);
-			gpio_set_function(0, GPIO_FUNC_I2C);
-			gpio_set_function(1, GPIO_FUNC_I2C);
-
-			gpio_pull_up(0);
-			gpio_pull_up(1);
-
-			//bi_decl(bi_2pins_with_func(2, 3, GPIO_FUNC_I2C));
-    	//bi_decl(bi_program_description("OLED I2C example for the Raspberry Pi Pico"));
-			ret = true;
-		break;
-    /*
-    case _DEF_I2C2:
-      i2c_tbl[_DEF_I2C2].p_hi2c = i2c1;
-      i2c_init(i2c_tbl[_DEF_I2C2].p_hi2c, freq_khz * 1000);
 			gpio_set_function(2, GPIO_FUNC_I2C);
 			gpio_set_function(3, GPIO_FUNC_I2C);
 
 			gpio_pull_up(2);
 			gpio_pull_up(3);
+
+			//bi_decl(bi_2pins_with_func(2, 3, GPIO_FUNC_I2C));
+    	//bi_decl(bi_program_description("OLED I2C example for the Raspberry Pi Pico"));
+			ret = true;
+		break;
+    
+    case _DEF_I2C2:
+      i2c_tbl[_DEF_I2C2].p_hi2c = i2c0;
+      i2c_init(i2c_tbl[_DEF_I2C2].p_hi2c, freq_khz * 1000);
+			gpio_set_function(0, GPIO_FUNC_I2C);
+			gpio_set_function(1, GPIO_FUNC_I2C);
+
+			gpio_pull_up(0);
+			gpio_pull_up(1);
       
       ret = true;
     break;
-    */
+    
 		default:
 		break;
 	}
@@ -182,10 +182,10 @@ uint32_t i2cMemReads(uint8_t ch, uint16_t dev_addr, uint16_t mem_addr, uint16_t 
 	return ret;
 }
 
-uint32_t i2cMemRead(uint8_t ch, uint16_t dev_addr, uint16_t mem_addr, uint16_t mem_addr_size, uint8_t data)
+uint32_t i2cMemRead(uint8_t ch, uint16_t dev_addr, uint16_t mem_addr, uint16_t mem_addr_size, uint8_t *p_data)
 {
   uint32_t ret = 0;
-  ret = i2cMemReads(ch, dev_addr, mem_addr, mem_addr_size, &data, 1);
+  ret = i2cMemReads(ch, dev_addr, mem_addr, mem_addr_size, p_data, 1);
   return ret;
 }
 
