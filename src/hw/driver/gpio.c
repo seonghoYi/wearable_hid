@@ -16,7 +16,10 @@ typedef struct
 
 
 gpio_tbl_t gpio_tbl[GPIO_MAX_CH] = {
-  {25, _DEF_OUTPUT, true, false, _DEF_LOW},
+  {6, _DEF_OUTPUT, false, true, _DEF_HIGH}, //cs1
+  {7, _DEF_OUTPUT, false, true, _DEF_HIGH},//cs2
+  {8, _DEF_OUTPUT, false, true, _DEF_HIGH},//cs3
+  {9, _DEF_OUTPUT, false, true, _DEF_HIGH},//cs4
 
 };
 
@@ -26,7 +29,7 @@ bool gpioInit(void)
 
   for(int i = 0; i < GPIO_MAX_CH; i++)
   {
-    gpioPinMode(i, gpio_tbl[i].mode)
+    gpioPinMode(i, gpio_tbl[i].mode);
   }
 
   return ret;
