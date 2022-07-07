@@ -2,11 +2,14 @@
 #define SRC_COMMON_HW_INCLUDE_GPIO_H_
 
 
+#include "hw_def.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "hw_def.h"
+
 
 #ifdef _USE_HW_GPIO
 #define GPIO_MAX_CH   HW_GPIO_MAX_CH
