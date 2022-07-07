@@ -36,9 +36,9 @@ class cMPU6050
     void accGetData(void);
     bool accGetCaliDone(void);
     bool gyroGetCaliDone(void);
-    
-  private:
     uint8_t dev_ch;
+  private:
+    
     uint8_t i2c_ch;
     uint16_t i2c_addr;
 

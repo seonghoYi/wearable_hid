@@ -4,7 +4,7 @@ add_executable(${PRJ_NAME}
   ap/ap.cpp
   bsp/bsp.c
   common/core/qbuffer.c
-  hw/hw.c
+  hw/hw.cpp
   hw/driver/gpio.c
   hw/driver/led.c
   hw/driver/uart.c
@@ -17,6 +17,7 @@ add_executable(${PRJ_NAME}
 
   hw/driver/imu/mpu6050.cpp
   hw/driver/imu/MadgwickAHRS.cpp
+  hw/driver/imu/imu.cpp
   hw/driver/imu.cpp
 
 
@@ -31,7 +32,6 @@ target_include_directories(${PRJ_NAME} PUBLIC
   common/core
   common/hw/include
   hw
-  hw/include/imu
 
 )
 

@@ -12,7 +12,7 @@ bool hwInit()
 	ret &= uartInit();
 	ret &= cliInit();
 	ret &= i2cInit();
-	ret &= spiInit();
+	//ret &= spiInit();
 	ret &= imuInit();
 	ret &= HC06Init();
 	return ret;

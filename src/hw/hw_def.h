@@ -17,7 +17,7 @@
 #define _USE_HW_TCA9548A
 #define      HW_I2C_MUX_MAX_CH      4
 
-#define _USE_HW_SPI
+//#define _USE_HW_SPI
 #define      HW_SPI_MAX_CH          1
 
 #define _USE_HW_UART
@@ -33,6 +33,8 @@
 
 #define _USE_HW_MPU6050
 #define _USE_HW_IMU
+#define      HW_IMU_MAX_CH          5
+
 
 //#define  _USE_HW_ADXL345
 #define 	   HW_ADXL345_MAX_CH      4
