@@ -1,8 +1,7 @@
 #include "imu/mpu6050.h"
 #include "imu/mpu6050_regs.h"
 #include "i2c.h"
-
-
+#include "tca9548a.h"
 
 #ifdef _USE_HW_MPU6050
 
@@ -10,7 +9,7 @@
 #define MPU6050_I2C_ADDRESS 0x68 << 1
 
 
-cMPU6050::cMPU6050()
+cMPU6050::cMPU6050(uint8_t ch) : dev_ch(ch)
 {
   b_connected = false;
   i2c_addr = MPU6050_I2C_ADDRESS;
@@ -20,26 +19,50 @@ bool cMPU6050::init()
 {
   bool ret = true;
   uint8_t data = 0;
-
-  ret &= i2cBegin(_DEF_I2C1, 400);
+  uint8_t ch = dev_ch;
+  //dev_ch = ch;
   
+
+  switch(ch)
+  {
+    case _DEF_MPU6050_1:
+      i2c_ch = _DEF_I2C1;
+      ret &= i2cBegin(i2c_ch, 400);
+
+    break;
+    case _DEF_MPU6050_2:
+    case _DEF_MPU6050_3:
+    case _DEF_MPU6050_4:
+    case _DEF_MPU6050_5:
+      i2c_ch = _DEF_I2C2;
+      ret &= tca9548Init(400);
+    break;
+    default:
+      ret = false;
+    break;
+  }
+
   //mpu6050 reset
-  ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_PWR_MGMT_1, 1, MPU6050_RESET);
+  ret &= regWrite(MPU6050_PWR_MGMT_1, MPU6050_RESET);
   delay(100);
 
   //mpu6050 wakeup
-  ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_PWR_MGMT_1, 1, 0x00);
+  ret &= regWrite(MPU6050_PWR_MGMT_1, 0x00);
 
   //mpu6050 acc 2g
-  ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_ACCEL_CONFIG, 1, MPU6050_ACCEL_FSR2 << 3); 
+  ret &= regWrite(MPU6050_ACCEL_CONFIG, MPU6050_ACCEL_FSR2 << 3); 
 
   //mpu6050 gyro 2000
-  ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_GYRO_CONFIG, 1, MPU6050_GYRO_FSR2000 << 3);
+  ret &= regWrite(MPU6050_GYRO_CONFIG, MPU6050_GYRO_FSR2000 << 3);
 
   //mpu6050 config DLPF ~20Hz
-  ret &= i2cMemRead(_DEF_I2C1, i2c_addr, MPU6050_CONFIG, 1, data);
+  ret &= regRead(MPU6050_CONFIG, &data);
   data |= MPU6050_CONFIG_DLFP4;
-  ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_CONFIG, 1, data);
+  ret &= regWrite(MPU6050_CONFIG, data);
+
+  ret &= regWrite(MPU6050_FIFO_EN, 0x78);
+  ret &= regWrite(MPU6050_USER_CTRL, 0x40);
+ 
 
   return ret;
 }
@@ -83,7 +106,7 @@ void cMPU6050::accGetData()
 
   if (b_connected == true)
   {
-    i2cMemReads(_DEF_I2C1, MPU6050_I2C_ADDRESS, MPU6050_ACCEL_XOUT_H, 1, raw, 6);
+    regReads(MPU6050_ACCEL_XOUT_H, raw, 6);
 
     x = (((int16_t)raw[0]) << 8) | raw[1];
     y = (((int16_t)raw[2]) << 8) | raw[3];
@@ -122,12 +145,11 @@ void cMPU6050::gyroGetData()
 
   if (b_connected == true)
   {
-    i2cMemReads(_DEF_I2C1, MPU6050_I2C_ADDRESS, MPU6050_GYRO_XOUT_H, 1, raw, 6);
+    regReads(MPU6050_GYRO_XOUT_H, raw, 6);
 
     x = (((int16_t)raw[0]) << 8) | raw[1];
     y = (((int16_t)raw[2]) << 8) | raw[3];
     z = (((int16_t)raw[4]) << 8) | raw[5];
-
 
     gyroRaw[0] = x;
     gyroRaw[1] = y;
@@ -177,7 +199,7 @@ bool cMPU6050::gyroGetCaliDone()
 
 void cMPU6050::accCalibration()
 {
-  static int32_t a[3];
+  //static int32_t a[3];
 
 	if (calibrating_count_acc>0)
 	{
@@ -201,8 +223,8 @@ void cMPU6050::accCalibration()
 
 void cMPU6050::gyroCalibration()
 {
-	static int16_t previousGyroData[3];
-	static int32_t g[3];
+	//static int16_t previousGyroData[3];
+	//static int32_t g[3];
 
 	memset(previousGyroData, 0, 3 * 2);
 
@@ -241,7 +263,78 @@ void cMPU6050::gyroCalibration()
     //anti gyro glitch, limit the variation between two consecutive readings
     //gyroADC[axis] = constrain(gyroADC[axis],previousGyroADC[axis]-800,previousGyroADC[axis]+800);
     previousGyroData[axis] = gyroData[axis];
+ 
   }
+}
+
+
+bool cMPU6050::regWrite(uint16_t reg_addr, uint8_t data)
+{
+  bool ret = true;
+  uint8_t ch = dev_ch;
+
+  switch(ch)
+  {
+    case _DEF_MPU6050_1:
+      ret &= i2cMemWrite(i2c_ch, i2c_addr, reg_addr, 1, data);
+    break;
+    case _DEF_MPU6050_2:
+    case _DEF_MPU6050_3:
+    case _DEF_MPU6050_4:
+    case _DEF_MPU6050_5:
+      ch--;
+      ret &= tca9548MemWrite(ch, i2c_addr, reg_addr, 1, data);
+    break;
+    default:
+      ret = false;    
+  }
+  return ret;
+}
+
+bool cMPU6050::regRead(uint16_t reg_addr, uint8_t *p_data)
+{
+  bool ret = true;
+  uint8_t ch = dev_ch;
+
+  switch(ch)
+  {
+    case _DEF_MPU6050_1:
+      ret &= i2cMemRead(i2c_ch, i2c_addr, reg_addr, 1, p_data);
+    break;
+    case _DEF_MPU6050_2:
+    case _DEF_MPU6050_3:
+    case _DEF_MPU6050_4:
+    case _DEF_MPU6050_5:
+      ch--;
+      ret &= tca9548MemRead(ch, i2c_addr, reg_addr, 1, p_data);
+    break;
+    default:
+      ret = false;    
+  }
+  return ret;
+}
+
+bool cMPU6050::regReads(uint16_t reg_addr, uint8_t *p_data, uint16_t size)
+{
+  bool ret = true;
+  uint8_t ch = dev_ch;
+
+  switch(ch)
+  {
+    case _DEF_MPU6050_1:
+      ret &= i2cMemReads(i2c_ch, i2c_addr, reg_addr, 1, p_data, size);
+    break;
+    case _DEF_MPU6050_2:
+    case _DEF_MPU6050_3:
+    case _DEF_MPU6050_4:
+    case _DEF_MPU6050_5:
+      ch--;
+      ret &= tca9548MemReads(ch, i2c_addr, reg_addr, 1, p_data, size);
+    break;
+    default:
+      ret = false;    
+  }
+  return ret;
 }
 
 #endif
