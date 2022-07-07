@@ -499,7 +499,7 @@ bool cliRunCmd(cli_t *p_cli)
 
   if (cliParseArgs(p_cli) == true)
   {
-    cliPrintf("\r\n");
+    cliPrintf("\n");
 
     cliToUpper(p_cli->argv[0]);
 
@@ -702,7 +702,7 @@ void cliShowList(cli_args_t *args)
 
 
   cliPrintf("\r\n");
-  cliPrintf("---------- cmd list ---------\r\n");
+  cliPrintf("---------- cmd list ---------\n");
 
   for (int i=0; i<p_cli->cmd_count; i++)
   {
@@ -710,7 +710,7 @@ void cliShowList(cli_args_t *args)
     cliPrintf("\r\n");
   }
 
-  cliPrintf("-----------------------------\r\n");
+  cliPrintf("-----------------------------\n");
 }
 
 void cliMemoryDump(cli_args_t *args)
