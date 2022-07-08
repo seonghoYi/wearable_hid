@@ -36,6 +36,7 @@ target_include_directories(${PRJ_NAME} PUBLIC
 )
 
 target_link_libraries(${PRJ_NAME}
+  freertos
   pico_stdlib
   pico_multicore
   hardware_clocks
