@@ -35,4 +35,5 @@ add_compile_options(-Wall
         -O0
         )
 
+add_subdirectory(src/bsp/freertos)
 add_subdirectory(src)

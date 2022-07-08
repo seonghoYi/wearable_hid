@@ -3,6 +3,9 @@
 
 #include "def.h"
 
+#include <FreeRTOS.h>
+#include <task.h>
+
 #include <pico/binary_info.h>
 #include <pico/stdlib.h>
 #include <hardware/clocks.h>
