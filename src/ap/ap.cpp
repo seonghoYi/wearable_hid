@@ -9,20 +9,50 @@ cIMU imu4(_DEF_MPU6050_4);
 cIMU imu5(_DEF_MPU6050_5);
 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void ledThread(void *args)
+void vApplicationMallocFailedHook( void )
+{
+	while(1);
+}
+
+void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
+{
+	while(1);
+}
+
+void vApplicationTickHook( void )
+{
+	while(1);
+}
+
+#ifdef __cplusplus
+}
+#endif
+
+void usbThread1(void *args)
 {
 	while(1)
 	{
-		ledToggle(_DEF_LED1);
+		printf("task1\n");
 		vTaskDelay(100);
 	}
 }
 
+void usbThread2(void *args)
+{
+	while(1)
+	{
+		printf("task2\n");
+		vTaskDelay(200);
+	}
+}
 
 void apInit()
 {
-	//uartOpen(_DEF_UART1, 38400);
+	uartOpen(_DEF_UART1, 38400);
 	//cliOpen(_DEF_UART1, 38400);
 	//i2cBegin(_DEF_I2C2, 400);
 	//imuBegin(100);
@@ -63,7 +93,8 @@ void apInit()
 
 	//HC06Printf("Calibration Done!!\n");
 
-	xTaskCreate(ledThread, "ledThread", 256, NULL, 1, NULL);
+	xTaskCreate(usbThread1, "usbThread1", 256, NULL, 1, NULL);
+	xTaskCreate(usbThread2, "usbThread2", 256, NULL, 1, NULL);
 }
 
 
