@@ -5,6 +5,9 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
+#include <semphr.h>
+#include <queue.h>
+#include <timers.h>
 
 #include <pico/binary_info.h>
 #include <pico/stdlib.h>

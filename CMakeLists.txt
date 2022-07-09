@@ -17,11 +17,19 @@ if (NOT EXISTS ${PICO_SDK_PATH})
     message(FATAL_ERROR "Directory '${PICO_SDK_PATH}' not found")
 endif ()
 
-set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+
+
+
 include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
+set(FREERTOS_KERNEL_PATH "../src/bsp/freertos/FreeRTOS-Kernel")
+# Pull in FreeRTOS
+include(src/bsp/freertos/FreeRTOS_Kernel_import.cmake)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 project(PRJ_NAME C CXX ASM)
+
 
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
@@ -35,5 +43,4 @@ add_compile_options(-Wall
         -O0
         )
 
-add_subdirectory(src/bsp/freertos)
 add_subdirectory(src)

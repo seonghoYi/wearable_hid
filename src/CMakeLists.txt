@@ -25,7 +25,7 @@ add_executable(${PRJ_NAME}
 )
 
 
-target_include_directories(${PRJ_NAME} PUBLIC
+target_include_directories(${PRJ_NAME} PRIVATE
   ap
   bsp
   common
@@ -35,8 +35,13 @@ target_include_directories(${PRJ_NAME} PUBLIC
 
 )
 
+target_compile_definitions(${PRJ_NAME} PRIVATE
+  PICO_STDIO_STACK_BUFFER_SIZE=64 # use a small printf on stack buffer
+)
+
 target_link_libraries(${PRJ_NAME}
-  freertos
+  FreeRTOS-Kernel 
+  FreeRTOS-Kernel-Heap4
   pico_stdlib
   pico_multicore
   hardware_clocks
