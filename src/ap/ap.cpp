@@ -1,6 +1,6 @@
 #include "ap.h"
-#include "imu/imu.h"
-
+//#include "imu/imu.h"
+#include "imu_ap.h"
 /*
 cIMU imu1(_DEF_MPU6050_1);
 cIMU imu2(_DEF_MPU6050_2);
@@ -15,40 +15,36 @@ extern "C" {
 
 void vApplicationMallocFailedHook( void )
 {
+	ledOn(_DEF_LED1);
 	while(1);
 }
 
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 {
+	ledOn(_DEF_LED1);
 	while(1);
 }
 
 void vApplicationTickHook( void )
 {
-	while(1);
+
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-void usbThread1(void *args)
+
+void threadLed(void *arg)
 {
 	while(1)
 	{
-		printf("task1\n");
-		vTaskDelay(100);
+		ledToggle(_DEF_LED1);
+		delay(1000);
 	}
+	
 }
 
-void usbThread2(void *args)
-{
-	while(1)
-	{
-		printf("task2\n");
-		vTaskDelay(200);
-	}
-}
 
 void apInit()
 {
@@ -93,8 +89,13 @@ void apInit()
 
 	//HC06Printf("Calibration Done!!\n");
 
-	xTaskCreate(usbThread1, "usbThread1", 256, NULL, 1, NULL);
-	xTaskCreate(usbThread2, "usbThread2", 256, NULL, 1, NULL);
+	//xTaskCreate(threadImu, "threadImu", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU1, NULL);
+	xTaskCreate(threadImu1, "threadImu1", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU1, NULL);
+	xTaskCreate(threadImu2, "threadImu2", _HW_DEF_RTOS_THREAD_MEM_IMU2, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU2, NULL);
+	xTaskCreate(threadImu3, "threadImu3", _HW_DEF_RTOS_THREAD_MEM_IMU3, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU3, NULL);
+	xTaskCreate(threadImu4, "threadImu4", _HW_DEF_RTOS_THREAD_MEM_IMU4, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU4, NULL);
+	xTaskCreate(threadImu5, "threadImu5", _HW_DEF_RTOS_THREAD_MEM_IMU5, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU5, NULL);
+	xTaskCreate(threadLed, "threadLed", 128, NULL, 1, NULL);
 }
 
 
@@ -108,7 +109,7 @@ void apMain()
 	int16_t *acc, *gyro;
 	char buff[100];
 	*/
-	vTaskStartScheduler();
+
 	while(1)	
 	{
 		//imuUpdate(_DEF_MPU6050_1);

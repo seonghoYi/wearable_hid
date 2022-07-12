@@ -2,6 +2,9 @@ add_executable(${PRJ_NAME}
   main.cpp
   
   ap/ap.cpp
+
+  ap/src/imu_ap.cpp
+
   bsp/bsp.c
   common/core/qbuffer.c
   hw/hw.cpp
@@ -27,6 +30,7 @@ add_executable(${PRJ_NAME}
 
 target_include_directories(${PRJ_NAME} PRIVATE
   ap
+  ap/include
   bsp
   common
   common/core
