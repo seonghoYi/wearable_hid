@@ -15,6 +15,7 @@ extern "C" {
 #include "cli.h"
 
 #include "imu.h"
+#include "adxl345.h"
 #include "hc06.h"
 
 bool hwInit();

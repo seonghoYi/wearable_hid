@@ -14,6 +14,7 @@ bool hwInit()
 	ret &= i2cInit();
 	//ret &= spiInit();
 	ret &= imuInit();
-	ret &= HC06Init();
+	ret &= adxl345Init();
+	//ret &= HC06Init();
 	return ret;
 }

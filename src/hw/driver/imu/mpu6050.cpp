@@ -1,8 +1,6 @@
 #include "imu/mpu6050.h"
 #include "imu/mpu6050_regs.h"
 #include "i2c.h"
-#include "tca9548a.h"
-
 #ifdef _USE_HW_MPU6050
 
 
@@ -30,12 +28,6 @@ bool cMPU6050::init()
       ret &= i2cBegin(i2c_ch, 400);
 
     break;
-    case _DEF_MPU6050_2:
-    case _DEF_MPU6050_3:
-    case _DEF_MPU6050_4:
-    case _DEF_MPU6050_5:
-      i2c_ch = _DEF_I2C2;
-      ret &= tca9548Init(400);
     break;
     default:
       ret = false;
@@ -278,13 +270,6 @@ bool cMPU6050::regWrite(uint16_t reg_addr, uint8_t data)
     case _DEF_MPU6050_1:
       ret &= i2cMemWrite(i2c_ch, i2c_addr, reg_addr, 1, data);
     break;
-    case _DEF_MPU6050_2:
-    case _DEF_MPU6050_3:
-    case _DEF_MPU6050_4:
-    case _DEF_MPU6050_5:
-      ch--;
-      ret &= tca9548MemWrite(ch, i2c_addr, reg_addr, 1, data);
-    break;
     default:
       ret = false;    
   }
@@ -301,13 +286,6 @@ bool cMPU6050::regRead(uint16_t reg_addr, uint8_t *p_data)
     case _DEF_MPU6050_1:
       ret &= i2cMemRead(i2c_ch, i2c_addr, reg_addr, 1, p_data);
     break;
-    case _DEF_MPU6050_2:
-    case _DEF_MPU6050_3:
-    case _DEF_MPU6050_4:
-    case _DEF_MPU6050_5:
-      ch--;
-      ret &= tca9548MemRead(ch, i2c_addr, reg_addr, 1, p_data);
-    break;
     default:
       ret = false;    
   }
@@ -323,13 +301,6 @@ bool cMPU6050::regReads(uint16_t reg_addr, uint8_t *p_data, uint16_t size)
   {
     case _DEF_MPU6050_1:
       ret &= i2cMemReads(i2c_ch, i2c_addr, reg_addr, 1, p_data, size);
-    break;
-    case _DEF_MPU6050_2:
-    case _DEF_MPU6050_3:
-    case _DEF_MPU6050_4:
-    case _DEF_MPU6050_5:
-      ch--;
-      ret &= tca9548MemReads(ch, i2c_addr, reg_addr, 1, p_data, size);
     break;
     default:
       ret = false;    

@@ -16,11 +16,11 @@ typedef struct
 
 
 gpio_tbl_t gpio_tbl[GPIO_MAX_CH] = {
-  {6, _DEF_OUTPUT, false, true, _DEF_HIGH}, //cs1
-  {7, _DEF_OUTPUT, false, true, _DEF_HIGH},//cs2
-  {8, _DEF_OUTPUT, false, true, _DEF_HIGH},//cs3
-  {9, _DEF_OUTPUT, false, true, _DEF_HIGH},//cs4
-
+  {18, _DEF_OUTPUT, true, false, _DEF_LOW},
+  {6, _DEF_OUTPUT, true, false, _DEF_LOW}, //i2c mux s0
+  {7, _DEF_OUTPUT, true, false, _DEF_LOW}, //i2c mux s1
+  {8, _DEF_OUTPUT, true, false, _DEF_LOW}, //i2c mux s2
+  {9, _DEF_OUTPUT, false, true, _DEF_LOW}, //i2c mux E
 };
 
 bool gpioInit(void)
@@ -77,7 +77,7 @@ bool gpioPinMode(uint8_t ch, uint8_t mode)
 
 void gpioPinWrite(uint8_t ch, bool value)
 {
-  if (ch < 0 || ch >= GPIO_MAX_CH) return;
+  if (ch >= GPIO_MAX_CH) return;
 	
 	if(value)
 	{
@@ -93,7 +93,7 @@ bool gpioPinRead(uint8_t ch)
 {
   bool ret = false;
 
-  if (ch < 0 || ch >= GPIO_MAX_CH) return ret;
+  if (ch >= GPIO_MAX_CH) return ret;
 
 	if (gpio_get(gpio_tbl[ch].pin) == gpio_tbl[ch].on_state)
 	{
@@ -104,8 +104,8 @@ bool gpioPinRead(uint8_t ch)
 
 void gpioPinToggle(uint8_t ch)
 {
-  if (ch < 0 || ch >= GPIO_MAX_CH) return;
-  gpio_xor_mask(gpio_tbl[ch].pin);
+  if (ch >= GPIO_MAX_CH) return;
+  gpio_xor_mask(1<<gpio_tbl[ch].pin);
 }
 
 

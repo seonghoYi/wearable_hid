@@ -5,7 +5,13 @@
 
 //static cIMU imu(_DEF_MPU6050_1);
 
-cIMU imu_tbl[IMU_MAX_CH] = {cIMU(_DEF_MPU6050_1), cIMU(_DEF_MPU6050_2), cIMU(_DEF_MPU6050_3), cIMU(_DEF_MPU6050_4), cIMU(_DEF_MPU6050_5),};
+cIMU imu_tbl[IMU_MAX_CH] = {
+  cIMU(_DEF_MPU6050_1), 
+  //cIMU(_DEF_MPU6050_2), 
+  //cIMU(_DEF_MPU6050_3), 
+  //cIMU(_DEF_MPU6050_4), 
+  //cIMU(_DEF_MPU6050_5),
+};
 
 #ifdef _USE_HW_IMU
 

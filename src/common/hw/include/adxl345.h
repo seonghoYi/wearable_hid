@@ -11,10 +11,10 @@ extern "C" {
 #ifdef _USE_HW_ADXL345
 #define			ADXL345_MAX_CH			HW_ADXL345_MAX_CH
 
-#define ADXL345_1     _DEF_GPIO1 //GPIO1
-#define ADXL345_2     _DEF_GPIO2 //GPIO2
-#define ADXL345_3     _DEF_GPIO3 //GPIO3
-#define ADXL345_4     _DEF_GPIO4 //GPIO4
+#define ADXL345_1     _DEF_ADXL345_1
+#define ADXL345_2     _DEF_ADXL345_2
+#define ADXL345_3     _DEF_ADXL345_3
+#define ADXL345_4     _DEF_ADXL345_4
 
 #define ADXL345_REG_DEVID             0x00U
 #define ADXL345_REG_THRESH_TAP        0x1DU
@@ -51,7 +51,7 @@ extern "C" {
 
 bool adxl345Init(void);
 bool adxl345Begin(uint8_t ch);
-float *adxl345GetData(uint8_t ch);
+bool adxl345GetData(uint8_t ch, float data[3]);
 
 
 

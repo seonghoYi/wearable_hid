@@ -16,6 +16,7 @@
 #define _DEF_GPIO2            1
 #define _DEF_GPIO3            2
 #define _DEF_GPIO4            3
+#define _DEF_GPIO5            3
 
 #define _DEF_UART1            0
 #define _DEF_UART2            1
@@ -41,6 +42,11 @@
 #define _DEF_MPU6050_3        2
 #define _DEF_MPU6050_4        3
 #define _DEF_MPU6050_5        4
+
+#define _DEF_ADXL345_1     0 
+#define _DEF_ADXL345_2     1 
+#define _DEF_ADXL345_3     2 
+#define _DEF_ADXL345_4     3 
 
 
 #define _DEF_INPUT            0

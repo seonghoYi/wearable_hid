@@ -15,13 +15,14 @@ add_executable(${PRJ_NAME}
   hw/driver/spi.c
   hw/driver/cli.c
 
-  hw/driver/tca9548a.c
   hw/driver/hc06.c
 
   hw/driver/imu/mpu6050.cpp
   hw/driver/imu/MadgwickAHRS.cpp
   hw/driver/imu/imu.cpp
   hw/driver/imu.cpp
+
+  hw/driver/adxl345.c
 
 
 

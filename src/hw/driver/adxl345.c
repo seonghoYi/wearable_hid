@@ -1,11 +1,12 @@
 #include "adxl345.h"
-#include "spi.h"
+#include "i2c.h"
 #include "gpio.h"
 
 #include "cli.h"
 
 #ifdef _USE_HW_ADXL345
 
+#define ADXL345_ADDRESS   0x53 << 1
 
 #ifdef _USE_HW_CLI
 static void cliADXL345(cli_args_t *args);
@@ -13,47 +14,62 @@ static void cliADXL345(cli_args_t *args);
 
 
 
-void csEnable(uint8_t ch)
+bool adxl345RegWrite(uint8_t ch, uint8_t reg, uint8_t data)
 {
-  gpioPinWrite(ch, true);
+  bool ret = false;
+
+  gpioPinWrite(_DEF_GPIO5, _DEF_HIGH); //Enable
+
+  gpioPinWrite(_DEF_GPIO2, ch & 0x01); //s0
+  gpioPinWrite(_DEF_GPIO3, ch & 0x02); //s1
+  gpioPinWrite(_DEF_GPIO4, ch & 0x04); //s2
+
+
+  if (i2cMemWrite(_DEF_I2C2, ADXL345_ADDRESS, reg, 1, data) > 0)
+  {
+    reg = true;
+  }
+  gpioPinWrite(_DEF_GPIO5, _DEF_LOW);
+
+  return ret;
 }
 
-void csDisable(uint8_t ch)
+uint8_t adxl345RegRead(uint8_t ch, uint8_t reg)
 {
-  gpioPinWrite(ch, false);
+  uint8_t ret = 0;
+
+  gpioPinWrite(_DEF_GPIO5, _DEF_HIGH); //Enable
+
+  gpioPinWrite(_DEF_GPIO2, ch & 0x01); //s0
+  gpioPinWrite(_DEF_GPIO3, ch & 0x02); //s1
+  gpioPinWrite(_DEF_GPIO4, ch & 0x04); //s2
+
+  
+  i2cMemRead(_DEF_I2C2, ADXL345_ADDRESS, reg, 1, &ret);
+  gpioPinWrite(_DEF_GPIO5, _DEF_LOW);
+
+  return ret;
 }
 
-
-void adxl345WriteReg(uint8_t ch, uint8_t reg, uint8_t data)
+bool adxl345RegReads(uint8_t ch, uint8_t reg, uint8_t *p_data, uint16_t size)
 {
-  uint8_t tx_buf[2], rx_buf[2];
-  tx_buf[0] = reg | 0x00 | 0x40; //write, multibyte
-  tx_buf[1] = data;
+  bool ret = false;
 
-  csEnable(ch);
-  //spiTransfer(_DEF_SPI1, tx_buf, rx_buf, 2);
+  gpioPinWrite(_DEF_GPIO5, _DEF_HIGH); //Enable
 
-  spiTransfer(_DEF_SPI1, tx_buf, rx_buf, 2, 100);
-  csDisable(ch);
+  gpioPinWrite(_DEF_GPIO2, ch & 0x01); //s0
+  gpioPinWrite(_DEF_GPIO3, ch & 0x02); //s1
+  gpioPinWrite(_DEF_GPIO4, ch & 0x04); //s2
 
+  
+  if (i2cMemReads(_DEF_I2C2, ADXL345_ADDRESS, reg, 1, p_data, size) > 0)
+  {
+    ret = true;
+  }
+  gpioPinWrite(_DEF_GPIO5, _DEF_LOW);
+
+  return ret;
 }
-
-uint8_t adxl345ReadReg(uint8_t ch, uint8_t reg)
-{
-  uint8_t tx_buf[2], rx_buf[2];
-
-  tx_buf[0] = reg | 0x80 | 0x40; //read, multibyte
-  tx_buf[1] = 0x00;
-
-  csEnable(ch);
-  //spiTransfer(_DEF_SPI1, tx_buf, rx_buf, 2);
-  spiTransfer(_DEF_SPI1, tx_buf, rx_buf, 2, 100);
-  csDisable(ch);
-
-  return rx_buf[1];
-}
-
-
 
 
 bool adxl345Init(void)
@@ -72,25 +88,48 @@ bool adxl345Begin(uint8_t ch)
 {
   bool ret = true;
 
-  spiBegin(_DEF_SPI1);//, 2*1000); //2MHz
+  i2cBegin(_DEF_I2C2, 400);
 
-  delay(1000);
-
-  //while (adxl345ReadReg(ch, ADXL345_REG_DEVID) != 0xE5);
-
-  if (adxl345ReadReg(ch, ADXL345_REG_DEVID) == 0xE5)
+  if (adxl345RegRead(ch, ADXL345_REG_DEVID) != 0xE5)
   {
-    ret &= true;
+    ret = false;
+    return ret;
   }
-  else
-  {
-    ret &= false;
-  }
+
+  adxl345RegWrite(ch, ADXL345_REG_POWER_CTL, 0x00); //reset
+  adxl345RegWrite(ch, ADXL345_REG_POWER_CTL, 0x08); //measure mode
+  adxl345RegWrite(ch, ADXL345_REG_DATA_FORMAT, 0x00); //2g
+
+  adxl345RegWrite(ch, ADXL345_REG_FIFO_CTL, 0x80); //fifo stream mode
 
 
 
   return ret;
 }
+
+bool adxl345GetData(uint8_t ch, float data[3])
+{
+  bool ret = true;
+  uint8_t buff[6];
+  int16_t x, y, z;
+  if (NULL == data)
+  {
+    return false;
+  }
+
+  ret &= adxl345RegReads(ch, ADXL345_REG_DATAX0, &buff[0], 5);
+
+  x = (((int16_t)buff[1]) << 8) | buff[0];
+  y = (((int16_t)buff[3]) << 8) | buff[2];
+  z = (((int16_t)buff[5]) << 8) | buff[4];
+
+  data[0] = (float)x * (4.0 / 1024.0);
+  data[1] = (float)y * (4.0 / 1024.0);
+  data[2] = (float)z * (4.0 / 1024.0);
+  
+  return ret;
+}
+
 
 
 #ifdef _USE_HW_CLI
@@ -134,7 +173,7 @@ void cliADXL345(cli_args_t *args)
 
     if(args->isStr(0, "read") == true)
     {
-      cliPrintf("adxl CH%d 0x%02X : 0x%02X\n", print_ch, reg_addr, adxl345ReadReg(ch, reg_addr));
+      cliPrintf("adxl CH%d 0x%02X : 0x%02X\n", print_ch, reg_addr, adxl345RegRead(ch, reg_addr));
     }
     else
     {
@@ -152,7 +191,7 @@ void cliADXL345(cli_args_t *args)
 
     if (args->isStr(0, "write") == true)
     {
-      adxl345WriteReg(ch, reg_addr, write_data);
+      adxl345RegWrite(ch, reg_addr, write_data);
     }
     else
     {
