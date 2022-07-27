@@ -8,11 +8,13 @@
 #define _USE_HW_LED
 #define      HW_LED_MAX_CH          1
 
-//#define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         1
+#define _USE_HW_GPIO
+#define      HW_GPIO_MAX_CH         5
+
 
 #define _USE_HW_I2C
-#define 		 HW_I2C_MAX_CH 					1
+#define 		 HW_I2C_MAX_CH 					2
+//#define _USE_HW_I2C_MUX
 
 
 #define _USE_HW_UART
@@ -42,7 +44,11 @@
 
 
 #define _USE_HW_MPU6050
-
 #define _USE_HW_IMU
+
+#define _USE_HW_ADXL345
+#define      HW_ADXL345_MAX_CH         4
+
+
 
 #endif /* SRC_HW_HW_DEF_H_ */

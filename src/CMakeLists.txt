@@ -17,6 +17,8 @@ add_executable(${PRJ_NAME}
   hw/driver/imu/imu.cpp
   hw/driver/imu.cpp
 
+  hw/driver/adxl345.c
+
 )
 
 

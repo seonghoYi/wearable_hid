@@ -7,12 +7,12 @@ bool hwInit()
 {
 	bool ret = true;
 	ret &= bspInit();
-	//ret &= gpioInit();
+	ret &= gpioInit();
 	ret &= ledInit();
 	ret &= uartInit();
 	ret &= cliInit();
 	ret &= i2cInit();
-	//ret &= lcdInit();
 	ret &= imuInit();
+	ret &= adxl345Init();
 	return ret;
 }

@@ -12,6 +12,12 @@
 #define _DEF_LED2             1
 #define _DEF_LED3             2
 
+#define _DEF_GPIO1            0
+#define _DEF_GPIO2            1
+#define _DEF_GPIO3            2
+#define _DEF_GPIO4            3
+#define _DEF_GPIO5            4
+
 #define _DEF_UART1            0
 #define _DEF_UART2            1
 
