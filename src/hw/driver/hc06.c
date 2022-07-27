@@ -114,7 +114,7 @@ uint32_t HC06Printf(char *fmt, ...)
 }
 
 
-#endif
+
 
 
 #ifdef _USE_HW_CLI
@@ -258,4 +258,6 @@ void cliHC06(cli_args_t *args)
   }
 
 }  
+#endif
+
 #endif
