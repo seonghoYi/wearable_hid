@@ -37,7 +37,7 @@ bool cMPU6050::init()
   ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_GYRO_CONFIG, 1, MPU6050_GYRO_FSR2000 << 3);
 
   //mpu6050 config DLPF ~20Hz
-  ret &= i2cMemRead(_DEF_I2C1, i2c_addr, MPU6050_CONFIG, 1, data);
+  ret &= i2cMemRead(_DEF_I2C1, i2c_addr, MPU6050_CONFIG, 1, &data);
   data |= MPU6050_CONFIG_DLFP4;
   ret &= i2cMemWrite(_DEF_I2C1, i2c_addr, MPU6050_CONFIG, 1, data);
 
