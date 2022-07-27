@@ -89,13 +89,13 @@ void apInit()
 
 	//HC06Printf("Calibration Done!!\n");
 
-	//xTaskCreate(threadImu, "threadImu", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU1, NULL);
+	xTaskCreate(threadImu, "threadImu", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, 0, NULL);
 	xTaskCreate(threadImu1, "threadImu1", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU1, NULL);
 	xTaskCreate(threadImu2, "threadImu2", _HW_DEF_RTOS_THREAD_MEM_IMU2, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU2, NULL);
 	xTaskCreate(threadImu3, "threadImu3", _HW_DEF_RTOS_THREAD_MEM_IMU3, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU3, NULL);
 	xTaskCreate(threadImu4, "threadImu4", _HW_DEF_RTOS_THREAD_MEM_IMU4, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU4, NULL);
 	xTaskCreate(threadImu5, "threadImu5", _HW_DEF_RTOS_THREAD_MEM_IMU5, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU5, NULL);
-	xTaskCreate(threadLed, "threadLed", 128, NULL, 1, NULL);
+	//xTaskCreate(threadLed, "threadLed", 128, NULL, 1, NULL);
 }
 
 
