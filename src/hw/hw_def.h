@@ -10,18 +10,13 @@
 
 
 #define _HW_DEF_RTOS_THREAD_PRI_MAIN          0
-#define _HW_DEF_RTOS_THREAD_PRI_IMU1          1
-#define _HW_DEF_RTOS_THREAD_PRI_IMU2          1
-#define _HW_DEF_RTOS_THREAD_PRI_IMU3          1
-#define _HW_DEF_RTOS_THREAD_PRI_IMU4          1
-#define _HW_DEF_RTOS_THREAD_PRI_IMU5          1
+#define _HW_DEF_RTOS_THREAD_PRI_IMU           1
+#define _HW_DEF_RTOS_THREAD_PRI_TAP           1
+
 
 #define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 32*1024)
-#define _HW_DEF_RTOS_THREAD_MEM_IMU1          _HW_DEF_RTOS_MEM_SIZE( 4*1024)
-#define _HW_DEF_RTOS_THREAD_MEM_IMU2          _HW_DEF_RTOS_MEM_SIZE( 4*1024)
-#define _HW_DEF_RTOS_THREAD_MEM_IMU3          _HW_DEF_RTOS_MEM_SIZE( 4*1024)
-#define _HW_DEF_RTOS_THREAD_MEM_IMU4          _HW_DEF_RTOS_MEM_SIZE( 4*1024)
-#define _HW_DEF_RTOS_THREAD_MEM_IMU5          _HW_DEF_RTOS_MEM_SIZE( 4*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_IMU           _HW_DEF_RTOS_MEM_SIZE( 4*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_TAP           _HW_DEF_RTOS_MEM_SIZE( 4*1024)
 
 #define _USE_HW_RTOS
 
@@ -50,8 +45,8 @@
 #define      HW_CLI_LINE_BUF_MAX    64
 
 
-#define _USE_HW_MPU6050
-#define _USE_HW_IMU
+//#define _USE_HW_MPU6050
+//#define _USE_HW_IMU
 #define      HW_IMU_MAX_CH          1
 
 
