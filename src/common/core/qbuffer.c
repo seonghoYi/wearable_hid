@@ -86,7 +86,7 @@ bool qbufferRead(qbuffer_t *p_node, uint8_t *p_data, uint32_t length)
 		{
 			for (int j=0; j<size; j++)
 			{
-				p_data[i*size] = p_node->p_buf[p_node->out];
+				p_data[i*size+j] = p_node->p_buf[p_node->out*size+j];
 			}
 		}
 
