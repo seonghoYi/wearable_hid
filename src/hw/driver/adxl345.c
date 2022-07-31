@@ -117,7 +117,7 @@ bool adxl345GetData(uint8_t ch, float data[3])
     return false;
   }
 
-  ret &= adxl345RegReads(ch, ADXL345_REG_DATAX0, &buff[0], 5);
+  ret &= adxl345RegReads(ch, ADXL345_REG_DATAX0, &buff[0], 6);
 
   x = (((int16_t)buff[1]) << 8) | buff[0];
   y = (((int16_t)buff[3]) << 8) | buff[2];
