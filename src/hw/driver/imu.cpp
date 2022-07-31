@@ -3,6 +3,10 @@
 
 #include "cli.h"
 
+
+#ifdef _USE_HW_IMU
+
+
 //static cIMU imu(_DEF_MPU6050_1);
 
 cIMU imu_tbl[IMU_MAX_CH] = {
@@ -12,9 +16,6 @@ cIMU imu_tbl[IMU_MAX_CH] = {
   //cIMU(_DEF_MPU6050_4), 
   //cIMU(_DEF_MPU6050_5),
 };
-
-#ifdef _USE_HW_IMU
-
 
 static void cliIMU(cli_args_t *args);
 

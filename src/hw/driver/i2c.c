@@ -41,6 +41,12 @@ bool i2cBegin(uint8_t ch, uint32_t freq_khz)
 {
 	bool ret = false;
 
+
+  if (i2c_tbl[ch].is_init == true)
+  {
+    return true;
+  }
+
 	switch(ch)
 	{
 		case _DEF_I2C1:

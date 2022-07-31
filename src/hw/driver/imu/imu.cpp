@@ -1,7 +1,7 @@
 #include "imu/imu.h"
 
 
-
+#ifdef _USE_HW_IMU
 
 cIMU::cIMU(uint8_t ch) : sensor(cMPU6050(ch)), tTime(0), cur_process_time(0), process_time(0)
 {
@@ -193,3 +193,5 @@ void cIMU::get_rpy(float (&rpy)[3])
   rpy[1] = this->rpy[1];
   rpy[2] = this->rpy[2];
 }
+
+#endif
