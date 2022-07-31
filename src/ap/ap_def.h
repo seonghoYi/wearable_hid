@@ -5,7 +5,7 @@
 
 
 //#define _USE_AP_IMU_AP
-
+#define _USE_AP_TAPDETECT_AP
 
 
 

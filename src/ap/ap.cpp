@@ -1,13 +1,5 @@
 #include "ap.h"
-//#include "imu/imu.h"
-//#include "imu_ap.h"
-/*
-cIMU imu1(_DEF_MPU6050_1);
-cIMU imu2(_DEF_MPU6050_2);
-cIMU imu3(_DEF_MPU6050_3);
-cIMU imu4(_DEF_MPU6050_4);
-cIMU imu5(_DEF_MPU6050_5);
-*/
+#include "tap_detect_ap.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,12 +40,22 @@ void threadLed(void *arg)
 void threadAdxl(void *arg)
 {
 	adxl345Begin(_DEF_ADXL345_1);
+	adxl345Begin(_DEF_ADXL345_2);
+	adxl345Begin(_DEF_ADXL345_3);
+	adxl345Begin(_DEF_ADXL345_4);
 
 	float data[3];
 	while(1)
 	{
 		adxl345GetData(_DEF_ADXL345_1, data);
-		printf("%f, %f, %f\n", data[0], data[1], data[2]);
+		printf("1: %f, %f, %f\n", data[0], data[1], data[2]);
+		adxl345GetData(_DEF_ADXL345_2, data);
+		printf("2: %f, %f, %f\n", data[0], data[1], data[2]);
+		adxl345GetData(_DEF_ADXL345_3, data);
+		printf("3: %f, %f, %f\n", data[0], data[1], data[2]);
+		adxl345GetData(_DEF_ADXL345_4, data);
+		printf("4: %f, %f, %f\n", data[0], data[1], data[2]);
+		delay(10);
 	}
 }
 
@@ -108,7 +110,9 @@ void apInit()
 	//xTaskCreate(threadImu4, "threadImu4", _HW_DEF_RTOS_THREAD_MEM_IMU4, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU4, NULL);
 	//xTaskCreate(threadImu5, "threadImu5", _HW_DEF_RTOS_THREAD_MEM_IMU5, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU5, NULL);
 	xTaskCreate(threadLed, "threadLed", 128, NULL, 1, NULL);
-	xTaskCreate(threadAdxl, "threadAdxl", 256, NULL, 1, NULL);
+	//xTaskCreate(threadAdxl, "threadAdxl", _HW_DEF_RTOS_THREAD_MEM_TAP, NULL, _HW_DEF_RTOS_THREAD_PRI_TAP, NULL);
+
+	tapDetectInit();
 }
 
 

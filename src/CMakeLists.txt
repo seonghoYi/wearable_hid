@@ -3,7 +3,7 @@ add_executable(${PRJ_NAME}
   
   ap/ap.cpp
 
-  ap/src/imu_ap.cpp
+  ap/src/tap_detect_ap.c
 
   bsp/bsp.c
   common/core/qbuffer.c
