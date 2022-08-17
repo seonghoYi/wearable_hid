@@ -1,10 +1,52 @@
 #include "tap_detect_ap.h"
 
-
+#include <math.h>
 
 #ifdef _USE_AP_TAPDETECT_AP
 
+
+#define TAP_PI_THRESH
+#define TAP_THRESH_HIGH_TICK_THRESH
+#define TAP_THRESH_LOW_TICK_THRESH
+
 QueueHandle_t data_queue = NULL;
+
+typedef enum
+{
+  TAP_DETECT_STATE_DATA_ACQ = 0x00u,
+  TAP_DETECT_STATE_OVERRUN_CHK,
+  TAP_DETECT_STATE_CALC_PI,
+  TAP_DETECT_STATE_THRES_CHK,
+  TAP_DETECT_STATE_TAP_DETECT,
+
+
+} tapDetectStateTypedef_t;
+
+typedef struct 
+{
+  bool step;
+  uint8_t ch;
+  uint8_t state;
+  
+  float acc[3];
+  float prev_acc[3];
+  float diff_acc[3];
+  float performance_index;
+
+  float threshold;
+
+  uint32_t tap_count;
+
+  uint32_t begin_tick;
+  uint32_t event_start_tick;
+  uint32_t thresh_high_tick;
+  uint32_t thresh_low_tick;
+
+
+
+
+  
+} tapDetectObjTypedef_t;
 
 
 typedef struct
@@ -63,28 +105,121 @@ void dataProduceThread(void *arg)
 }
 
 
+void tapDetectUpdate(tapDetectObjTypedef_t *p_tapObject, float acc_data[3]);
+
 void dataProcessThread(void *arg)
 {
   fingerAccTypedef_t data;
   fingerAccTypedef_t *p_data;
+
+
+  tapDetectObjTypedef_t tapObject;
+  tapObject.state = TAP_DETECT_STATE_DATA_ACQ;
+
+  printf("data process begin\n");
+  
   while(1)
   {
     if (data_queue != NULL)
     {
       if (xQueueReceive(data_queue, (void *)&data, 100) == pdPASS)
       {
-        p_data = &data;
-        printf("1: %f, %f, %f\n", p_data->index[0], p_data->index[1], p_data->index[2]);
-        printf("2: %f, %f, %f\n", p_data->middle[0], p_data->middle[1], p_data->middle[2]);
-        printf("3: %f, %f, %f\n", p_data->ring[0], p_data->ring[1], p_data->ring[2]);
-        printf("4: %f, %f, %f\n", p_data->baby[0], p_data->baby[1], p_data->baby[2]);
+        tapDetectUpdate(&tapObject, data.index);
       }
     }
-    
   }
 }
 
 
+
+
+void tapDetectUpdate(tapDetectObjTypedef_t *p_tapObject, float acc_data[3])
+{
+
+  if (p_tapObject->state == TAP_DETECT_STATE_DATA_ACQ)
+  {
+    if (p_tapObject->step == false)
+    {
+      p_tapObject->prev_acc[0] = acc_data[0];
+      p_tapObject->prev_acc[1] = acc_data[1];
+      p_tapObject->prev_acc[2] = acc_data[2];
+
+
+      /*
+       * Initialize variables
+       */
+      p_tapObject->thresh_low_tick = 0;
+      p_tapObject->thresh_high_tick = 0;
+
+      p_tapObject->step = true;
+      p_tapObject->state = TAP_DETECT_STATE_DATA_ACQ;
+    }
+    else
+    {
+      p_tapObject->acc[0] = acc_data[0];
+      p_tapObject->acc[1] = acc_data[1];
+      p_tapObject->acc[2] = acc_data[2];
+      p_tapObject->state = TAP_DETECT_STATE_OVERRUN_CHK;
+    }
+    
+  }
+  else if (p_tapObject->state == TAP_DETECT_STATE_OVERRUN_CHK)
+  {
+    if (p_tapObject->thresh_high_tick >= 250)
+    {
+      p_tapObject->thresh_high_tick = 0;
+    }
+    p_tapObject->state = TAP_DETECT_STATE_CALC_PI;
+  }
+  else if (p_tapObject->state == TAP_DETECT_STATE_CALC_PI)
+  {
+      p_tapObject->diff_acc[0] = p_tapObject->acc[0] - p_tapObject->prev_acc[0];
+      p_tapObject->diff_acc[1] = p_tapObject->acc[1] - p_tapObject->prev_acc[1];
+      p_tapObject->diff_acc[2] = p_tapObject->acc[2] - p_tapObject->prev_acc[2];
+
+      p_tapObject->performance_index = fabsf(p_tapObject->diff_acc[0]) + fabsf(p_tapObject->diff_acc[1]) + fabsf(p_tapObject->diff_acc[2]);
+      printf("%f\n", p_tapObject->performance_index);
+
+      p_tapObject->state = TAP_DETECT_STATE_THRES_CHK;
+  }
+  else if (p_tapObject->state == TAP_DETECT_STATE_THRES_CHK)
+  {
+    if (p_tapObject->performance_index < 3.6f && p_tapObject->performance_index > 2.0f)
+    {
+      p_tapObject->thresh_low_tick = 0;
+      p_tapObject->thresh_high_tick += 1;
+      p_tapObject->state = TAP_DETECT_STATE_DATA_ACQ;
+    }
+    else
+    {
+      if (p_tapObject->thresh_high_tick+p_tapObject->thresh_low_tick > 0)
+      {
+        printf("%d, %d\n", p_tapObject->thresh_high_tick, p_tapObject->thresh_low_tick);
+        p_tapObject->thresh_low_tick += 1;
+        p_tapObject->state = TAP_DETECT_STATE_TAP_DETECT;
+      }
+      else
+      {
+        p_tapObject->state = TAP_DETECT_STATE_DATA_ACQ;
+      }
+    }
+  }
+  else if (p_tapObject->state == TAP_DETECT_STATE_TAP_DETECT)
+  {
+    if (p_tapObject->thresh_low_tick > 40)
+    {
+      while(1);
+    }
+    else
+    {
+      p_tapObject->state = TAP_DETECT_STATE_DATA_ACQ;
+    }
+  }
+
+
+
+
+}
 
 
 
