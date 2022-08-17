@@ -217,5 +217,6 @@ void apMain()
 		}
 		*/
 		//cliMain();
+		delay(1);
 	}
 }
