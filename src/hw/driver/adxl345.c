@@ -100,6 +100,8 @@ bool adxl345Begin(uint8_t ch)
   adxl345RegWrite(ch, ADXL345_REG_POWER_CTL, 0x08); //measure mode
   adxl345RegWrite(ch, ADXL345_REG_DATA_FORMAT, 0x00); //2g
 
+  adxl345RegWrite(ch, ADXL345_REG_BW_RATE, 0x0F); //3200Hz
+
   adxl345RegWrite(ch, ADXL345_REG_FIFO_CTL, 0x80); //fifo stream mode
 
 
