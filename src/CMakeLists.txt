@@ -4,6 +4,7 @@ add_executable(${PRJ_NAME}
   ap/ap.cpp
 
   ap/src/tap_detect_ap.c
+  ap/src/accelerometer_handler.c
 
   bsp/bsp.c
   common/core/qbuffer.c
@@ -55,6 +56,7 @@ target_link_libraries(${PRJ_NAME}
   hardware_i2c
   hardware_spi
   hardware_uart
+  hardware_dma
   hardware_irq
 )
 
