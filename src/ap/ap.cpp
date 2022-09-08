@@ -1,5 +1,7 @@
 #include "ap.h"
-#include "tap_detect_ap.h"
+#include "accelerometer_handler.h"
+
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,25 +39,41 @@ void threadLed(void *arg)
 	
 }
 
-void threadAdxl(void *arg)
-{
-	adxl345Begin(_DEF_ADXL345_1);
-	adxl345Begin(_DEF_ADXL345_2);
-	adxl345Begin(_DEF_ADXL345_3);
-	adxl345Begin(_DEF_ADXL345_4);
 
-	float data[3];
+void accelerometerThread(void *arg)
+{
+	float data[12];
+	float *index = &data[0];
+	float *middle = &data[3];
+	float *ring = &data[6];
+	float *little = &data[9];
+
+	float sindex, smiddle, sring, slittle;
+
+	HC06Begin(HC06_BAUD_115200);
+	accelerometerHandlerInit();
+
+	float loop_hz = 500.0;
+	uint32_t loop_time = (1/loop_hz)*1000;
+	uint32_t prev_time = millis();
 	while(1)
 	{
-		adxl345GetData(_DEF_ADXL345_1, data);
-		printf("1: %f, %f, %f\n", data[0], data[1], data[2]);
-		adxl345GetData(_DEF_ADXL345_2, data);
-		printf("2: %f, %f, %f\n", data[0], data[1], data[2]);
-		adxl345GetData(_DEF_ADXL345_3, data);
-		printf("3: %f, %f, %f\n", data[0], data[1], data[2]);
-		adxl345GetData(_DEF_ADXL345_4, data);
-		printf("4: %f, %f, %f\n", data[0], data[1], data[2]);
-		delay(10);
+		if (millis()-prev_time >= loop_time)
+		{
+			accelerometerRead(data);
+			sindex = sqrtf(powf(index[0], 2) + powf(index[1], 2) + powf(index[2], 2));
+			smiddle = sqrtf(powf(middle[0], 2) + powf(middle[1], 2) + powf(middle[2], 2));
+			sring = sqrtf(powf(ring[0], 2) + powf(ring[1], 2) + powf(ring[2], 2));
+			slittle = sqrtf(powf(little[0], 2) + powf(little[1], 2) + powf(little[2], 2));
+			//uartPrintf(_DEF_UART2, "ix:%f iy:%f iz:%f, mx:%f my:%f mz:%f, rx:%f ry:%f rz:%f, lx:%f ly:%f lz:%f\n", index[0]+8.0, index[1]+8.0, index[2]+8.0,
+      //                                                    middle[0]+4.0, middle[1]+4.0, middle[2]+4.0,
+      //                                                    ring[0], ring[1], ring[2],
+      //                                                    little[0]-4.0, little[1]-4.0, little[2]-4.0);
+
+			uartPrintf(_DEF_UART2, "i:%f, m:%f, r:%f, l:%f\n", sindex+8.0, smiddle+4.0, sring, slittle-4.0);
+
+			prev_time = millis();
+		}
 	}
 }
 
@@ -63,160 +81,21 @@ void threadAdxl(void *arg)
 void apInit()
 {
 	uartOpen(_DEF_UART1, 38400);
-	//cliOpen(_DEF_UART1, 38400);
-	//i2cBegin(_DEF_I2C2, 400);
-	//imuBegin(100);
-	//HC06Begin(HC06_BAUD_115200);
 
 	
-	//HC06Printf("Starting IMU calibration.. Takes a second.\n");
-	//imuBegin(_DEF_MPU6050_1, 100);
-	//imuBegin(_DEF_MPU6050_2, 100);
-	//imuBegin(_DEF_MPU6050_3, 100);
-	//imuBegin(_DEF_MPU6050_4, 100);
-	//imuBegin(_DEF_MPU6050_5, 100);
-	//imu_tbl[_DEF_MPU6050_1].begin(100);
-	//imu_tbl[_DEF_MPU6050_2].begin(100);
-	//imu_tbl[_DEF_MPU6050_3].begin(100);
-	//imu_tbl[_DEF_MPU6050_4].begin(100);
-	//imu_tbl[_DEF_MPU6050_5].begin(100);
-	/*
-	imu1.begin(200);
-	ledOn(_DEF_LED1);
-	delay(10);
-	ledOff(_DEF_LED1);
-	imu2.begin(200);
-	ledOn(_DEF_LED1);
-	delay(10);
-	ledOff(_DEF_LED1);
-	imu3.begin(200);
-	ledOn(_DEF_LED1);
-	delay(10);
-	ledOff(_DEF_LED1);
-	imu4.begin(200);
-	ledOn(_DEF_LED1);
-	delay(10);
-	ledOff(_DEF_LED1);
-	imu5.begin(200);
-	ledOn(_DEF_LED1);
-	*/
 
-	//HC06Printf("Calibration Done!!\n");
-
-	//xTaskCreate(threadImu, "threadImu", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, 0, NULL);
-	//xTaskCreate(threadImu1, "threadImu1", _HW_DEF_RTOS_THREAD_MEM_IMU1, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU1, NULL);
-	//xTaskCreate(threadImu2, "threadImu2", _HW_DEF_RTOS_THREAD_MEM_IMU2, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU2, NULL);
-	//xTaskCreate(threadImu3, "threadImu3", _HW_DEF_RTOS_THREAD_MEM_IMU3, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU3, NULL);
-	//xTaskCreate(threadImu4, "threadImu4", _HW_DEF_RTOS_THREAD_MEM_IMU4, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU4, NULL);
-	//xTaskCreate(threadImu5, "threadImu5", _HW_DEF_RTOS_THREAD_MEM_IMU5, NULL, _HW_DEF_RTOS_THREAD_PRI_IMU5, NULL);
 	xTaskCreate(threadLed, "threadLed", 128, NULL, 1, NULL);
-	//xTaskCreate(threadAdxl, "threadAdxl", _HW_DEF_RTOS_THREAD_MEM_TAP, NULL, _HW_DEF_RTOS_THREAD_PRI_TAP, NULL);
-
-	tapDetectInit();
+	xTaskCreate(accelerometerThread, "accelerometerThread", 1024, NULL, 1, NULL);
 }
 
 
 void apMain()
 {
-	/*
-	uint32_t pre_time = millis();
-	uint32_t loop_us = micros();
 
-	float quat[4], euler[3];
-	int16_t *acc, *gyro;
-	char buff[100];
-	*/
 
 	while(1)	
 	{
 
-		//imuUpdate(_DEF_MPU6050_1);
-		//imuUpdate(_DEF_MPU6050_2);
-		//imuUpdate(_DEF_MPU6050_3);
-		//imuUpdate(_DEF_MPU6050_4);
-		//imuUpdate(_DEF_MPU6050_5);
-
-		//imu_tbl[_DEF_MPU6050_1].update();
-		//imu_tbl[_DEF_MPU6050_2].update();
-		//imu_tbl[_DEF_MPU6050_3].update();
-		//imu_tbl[_DEF_MPU6050_4].update();
-		//imu_tbl[_DEF_MPU6050_5].update();
-		/*
-		imu1.update();
-		imu2.update();
-		imu3.update();
-		imu4.update();
-		imu5.update();
-
-		if(millis() - pre_time >= 50)
-		{
-			printf("@");
-			printf("%d %d %d %d %d %d %d,", 
-									(int16_t)(imu2.ax*1000), (int16_t)(imu2.ay*1000), (int16_t)(imu2.az*1000), 
-									(int16_t)(imu2.quat[0]*1000), (int16_t)(imu2.quat[1]*1000), (int16_t)(imu2.quat[2]*1000), (int16_t)(imu2.quat[3]*1000));
-			
-			printf("%d %d %d %d %d %d %d,", 
-									(int16_t)(imu3.ax*1000), (int16_t)(imu3.ay*1000), (int16_t)(imu3.az*1000), 
-									(int16_t)(imu3.quat[0]*1000), (int16_t)(imu3.quat[1]*1000), (int16_t)(imu3.quat[2]*1000), (int16_t)(imu3.quat[3]*1000));
-
-			printf("%d %d %d %d %d %d %d,", 
-									(int16_t)(imu4.ax*1000), (int16_t)(imu4.ay*1000), (int16_t)(imu4.az*1000), 
-									(int16_t)(imu4.quat[0]*1000), (int16_t)(imu4.quat[1]*1000), (int16_t)(imu4.quat[2]*1000), (int16_t)(imu4.quat[3]*1000));
-
-			printf("%d %d %d %d %d %d %d,", 
-									(int16_t)(imu5.ax*1000), (int16_t)(imu5.ay*1000), (int16_t)(imu5.az*1000), 
-									(int16_t)(imu5.quat[0]*1000), (int16_t)(imu5.quat[1]*1000), (int16_t)(imu5.quat[2]*1000), (int16_t)(imu5.quat[3]*1000));
-									
-
-			printf("%d %d %d %d %d %d %d\n", 
-									(int16_t)(imu1.ax*1000), (int16_t)(imu1.ay*1000), (int16_t)(imu1.az*1000), 
-									(int16_t)(imu1.quat[0]*1000), (int16_t)(imu1.quat[1]*1000), (int16_t)(imu1.quat[2]*1000), (int16_t)(imu1.quat[3]*1000));
-			
-			//printf("%d %d %d\n", gyro[0], gyro[1], gyro[2]);
-			
-			//printf("%d %d %d\n", gyro[0], gyro[1], gyro[2]);
-
-			//HC06Printf("%d\n", millis());
-			pre_time = millis();
-		}
-		*/
-		//printf("1: %3.3f %3.3f %3.3f\n", imu1.rpy[0], imu1.rpy[1], imu1.rpy[2]);
-		//imuGetRPY(_DEF_MPU6050_1, euler);
-		//imu_tbl[_DEF_MPU6050_1].get_rpy(euler);
-		/*
-		printf("\033[2J");
-		printf("\033[10;0H");
-		imu1.get_rpy(euler);
-		printf("0: %3.3f %3.3f %3.3f\n", euler[0], euler[1], euler[2]);
-		imu2.get_rpy(euler);
-		printf("1: %3.3f %3.3f %3.3f\n", euler[0], euler[1], euler[2]);
-		imu3.get_rpy(euler);
-		printf("2: %3.3f %3.3f %3.3f\n", euler[0], euler[1], euler[2]);
-		imu4.get_rpy(euler);
-		printf("3: %3.3f %3.3f %3.3f\n", euler[0], euler[1], euler[2]);
-		imu5.get_rpy(euler);
-		printf("4: %3.3f %3.3f %3.3f\n", euler[0], euler[1], euler[2]);
-		*/
-		/*
-		if (millis() - pre_time >= 500)
-		{
-			ledToggle(_DEF_LED1);
-			pre_time = millis();
-		}
-		
-		imuUpdate();
-		rpy = imuGetRPY();
-		printf("%d, %d, %d\n", (int)rpy[0], (int)rpy[1], (int)rpy[2]);
-		*/
-		/*
-		if(uartAvailable(_DEF_UART2))
-		{
-			uint8_t rx = uartRead(_DEF_UART2);
-			//uartWrite(_DEF_UART2, &rx, 1);
-			cliPrintf("%c\n", rx);
-		}
-		*/
-		//cliMain();
 		delay(1);
 	}
 }

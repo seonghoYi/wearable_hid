@@ -54,6 +54,6 @@
 #define 	   HW_ADXL345_MAX_CH      4
 
 
-//#define _USE_HW_HC06
+#define _USE_HW_HC06
 
 #endif /* SRC_HW_HW_DEF_H_ */

@@ -15,6 +15,6 @@ bool hwInit()
 	//ret &= spiInit();
 	//ret &= imuInit();
 	ret &= adxl345Init();
-	//ret &= HC06Init();
+	ret &= HC06Init();
 	return ret;
 }

@@ -88,7 +88,7 @@ bool adxl345Begin(uint8_t ch)
 {
   bool ret = true;
 
-  i2cBegin(_DEF_I2C2, 400);
+  i2cBegin(_DEF_I2C2, 1000);
 
   if (adxl345RegRead(ch, ADXL345_REG_DEVID) != 0xE5)
   {
@@ -102,7 +102,7 @@ bool adxl345Begin(uint8_t ch)
 
   adxl345RegWrite(ch, ADXL345_REG_BW_RATE, 0x0F); //3200Hz
 
-  adxl345RegWrite(ch, ADXL345_REG_FIFO_CTL, 0x80); //fifo stream mode
+  adxl345RegWrite(ch, ADXL345_REG_FIFO_CTL, 0x00); //fifo stream mode
 
 
 
@@ -118,7 +118,14 @@ bool adxl345GetData(uint8_t ch, float data[3])
   {
     return false;
   }
-
+  /*
+  uint8_t test = adxl345RegRead(ch, ADXL345_REG_FIFO_STATUS);
+  printf("ch:%d, %d ", ch, test);
+  if (ch == 3)
+  {
+    printf("\n");
+  }
+  */
   ret &= adxl345RegReads(ch, ADXL345_REG_DATAX0, &buff[0], 6);
 
   x = (((int16_t)buff[1]) << 8) | buff[0];
@@ -128,7 +135,6 @@ bool adxl345GetData(uint8_t ch, float data[3])
   data[0] = (float)x * (4.0 / 1024.0);
   data[1] = (float)y * (4.0 / 1024.0);
   data[2] = (float)z * (4.0 / 1024.0);
-  
   return ret;
 }
 
