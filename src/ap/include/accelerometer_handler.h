@@ -13,6 +13,7 @@ extern "C" {
 
 bool accelerometerHandlerInit(void);
 void accelerometerRead(float data[12]);
+void accelerometerReadRaw(int16_t data[12]);
 
 #endif
 
