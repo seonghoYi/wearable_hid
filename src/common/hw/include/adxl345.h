@@ -52,7 +52,7 @@ extern "C" {
 bool adxl345Init(void);
 bool adxl345Begin(uint8_t ch);
 bool adxl345GetData(uint8_t ch, float data[3]);
-
+bool adxl345GetRawData(uint8_t ch, int16_t data[3]);
 
 
 #endif

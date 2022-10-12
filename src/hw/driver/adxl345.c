@@ -138,6 +138,28 @@ bool adxl345GetData(uint8_t ch, float data[3])
   return ret;
 }
 
+bool adxl345GetRawData(uint8_t ch, int16_t data[3])
+{
+  bool ret = true;
+  uint8_t buff[6];
+  int16_t x, y, z;
+  if (NULL == data)
+  {
+    return false;
+  }
+
+  ret &= adxl345RegReads(ch, ADXL345_REG_DATAX0, &buff[0], 6);
+
+  x = (((int16_t)buff[1]) << 8) | buff[0];
+  y = (((int16_t)buff[3]) << 8) | buff[2];
+  z = (((int16_t)buff[5]) << 8) | buff[4];
+
+  data[0] = x;
+  data[1] = y;
+  data[2] = z;
+  return ret;
+}
+
 
 
 #ifdef _USE_HW_CLI
