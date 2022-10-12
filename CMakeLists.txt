@@ -34,6 +34,7 @@ project(PRJ_NAME C CXX ASM)
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
+include(pico-tflmicro_import.cmake)
 
 add_compile_options(-Wall
         -Wno-format          # int != int32_t as far as the compiler is concerned because gcc has int32_t as long int
@@ -43,4 +44,5 @@ add_compile_options(-Wall
         -O0
         )
 
+#add_subdirectory(src/lib/pico-tflmicro)
 add_subdirectory(src)
