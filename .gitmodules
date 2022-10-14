@@ -1,4 +1,12 @@
-[submodule "src/bsp/freertos/FreeRTOS-Kernel"]
-	path = src/bsp/freertos/FreeRTOS-Kernel
-	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
+[submodule "external/FreeRTOS-Kernel"]
+	path = external/FreeRTOS-Kernel
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
 	branch = smp
+
+[submodule "external/pico-tflmicro"]
+	path = external/pico-tflmicro
+	url = https://github.com/raspberrypi/pico-tflmicro
+
+[submodule "external/pico-sdk"]
+	path = external/pico-sdk
+	url = https://github.com/raspberrypi/pico-sdk
