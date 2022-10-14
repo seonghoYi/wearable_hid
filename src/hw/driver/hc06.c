@@ -1,4 +1,4 @@
-#include "HC06.h"
+#include "hc06.h"
 #include "uart.h"
 
 #include "cli.h"
