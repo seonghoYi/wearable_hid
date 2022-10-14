@@ -48,6 +48,7 @@ target_compile_definitions(${PRJ_NAME} PRIVATE
 target_link_libraries(${PRJ_NAME}
   FreeRTOS-Kernel 
   FreeRTOS-Kernel-Heap4
+  pico-tflmicro
   pico_stdlib
   pico_multicore
   hardware_clocks
