@@ -1,6 +1,6 @@
 #include "ap.h"
 #include "accelerometer_handler.h"
-
+#include "filter.h"
 #include <math.h>
 
 #ifdef __cplusplus
@@ -29,38 +29,7 @@ void vApplicationTickHook( void )
 #endif
 
 
-typedef struct
-{
-	uint8_t filter_type;
-	float prev_input;
-	float prev_output;
-} filter_t;
 
-float lowPassFilter(filter_t *filter, float input, float sampling_time, float cutOffFreq)
-{
-	float output;
-	float wc = 2*M_PI*cutOffFreq; // 차단 각주파수
-	float tau = 1/wc;
-
-
-	output = (tau*filter->prev_output + sampling_time*input)/(tau+sampling_time);
-	filter->prev_output = output; //나중을 위한 출력값 저장
-	return output;
-}
-
-
-float highPassFilter(filter_t *filter, float input, float sampling_time, float cutOffFreq)
-{
-	float output;
-	float wc = 2*M_PI*cutOffFreq; // 차단 각주파수
-	float tau = 1/wc;
-
-
-	output = (tau*filter->prev_output + tau*(input-filter->prev_input))/(tau+sampling_time);
-	filter->prev_output = output;
-	filter->prev_input = input;
-	return output;
-}
 
 
 
@@ -69,7 +38,7 @@ void threadLed(void *arg)
 	while(1)
 	{
 		ledToggle(_DEF_LED1);
-		delay(1000);
+		delay(200);
 	}
 	
 }
@@ -77,29 +46,42 @@ void threadLed(void *arg)
 
 void accelerometerThread(void *arg)
 {
-	int16_t data[12];
+	float data[12];
+	float *thumb = &data[0];
+	float *index = &data[3];
+	float *middle = &data[6];
+	float *ring = &data[9];
 
-	//filter_t filter[4][3];
+
+	filter_t filter[4][3];
 
 	QueueHandle_t queue = (QueueHandle_t)arg;
 
 	HC06Begin(HC06_BAUD_115200);
 	accelerometerHandlerInit();
+
+	for (int i = 0; i < 3; i++)
+	{
+		filterInit(&filter[0][i]);
+		filterInit(&filter[1][i]);
+		filterInit(&filter[2][i]);
+		filterInit(&filter[3][i]);
+	}
 	uint32_t prev_time = millis();
 
-  //float sample_time = 1.f/3200.f;
+  float sample_time = 1.f/3200.f;
 	while(1)
 	{
-    accelerometerReadRaw(data);
-    /*
+		
+    accelerometerRead(data);
+    
     for (int i = 0; i < 3; i++)
     {
-      index[i] = highPassFilter(&filter[0][i], index[i], sample_time, 200.0);
-      middle[i] = highPassFilter(&filter[1][i], middle[i], sample_time, 200.0);
-      ring[i] = highPassFilter(&filter[2][i], ring[i], sample_time, 200.0);
-      little[i] = highPassFilter(&filter[3][i], little[i], sample_time, 200.0);
-    }
-    */
+      thumb[i] = filterHighPassFilter(&filter[0][i], thumb[i], sample_time, 200.0);
+      index[i] = filterHighPassFilter(&filter[1][i], index[i], sample_time, 200.0);
+      middle[i] = filterHighPassFilter(&filter[2][i], middle[i], sample_time, 200.0);
+      ring[i] = filterHighPassFilter(&filter[3][i], ring[i], sample_time, 200.0);
+		}
     //uartPrintf(_DEF_UART2, "ix:%f iy:%f iz:%f, mx:%f my:%f mz:%f, rx:%f ry:%f rz:%f, lx:%f ly:%f lz:%f\n", index[0]+8.0, index[1]+8.0, index[2]+8.0,
     //                                                    middle[0]+4.0, middle[1]+4.0, middle[2]+4.0,
     //                                                    ring[0], ring[1], ring[2],
@@ -107,9 +89,8 @@ void accelerometerThread(void *arg)
 
     //HC06Printf("i:%f, m:%f, r:%f, l:%f\n", sindex+8.0, smiddle+4.0, sring, slittle-4.0);
     xQueueSend(queue, (void *)data, 0);
-		printf("%d\n", millis()-prev_time);
 		prev_time = millis();
-    //delay(1);
+    delay(5);
 	}
 }
 
@@ -121,7 +102,7 @@ void apInit()
 	uartOpen(_DEF_UART1, 38400);
 
 	QueueHandle_t raw_data_queue;
-	raw_data_queue = xQueueCreate(960, sizeof(int16_t)*3*4);
+	raw_data_queue = xQueueCreate(960, sizeof(float)*4*3);
 
 	if (raw_data_queue == NULL)
 	{
@@ -148,16 +129,13 @@ void apMain()
 
 void dataProcessThread(void *arg)
 {
-  int16_t data[12];
-	int16_t *thumb = &data[0];
-	int16_t *index = &data[3];
-	int16_t *middle = &data[6];
-	int16_t *ring = &data[9];
+  float data[12];
+	float *thumb = &data[0];
+	float *index = &data[3];
+	float *middle = &data[6];
+	float *ring = &data[9];
 
-  int32_t sthumb, sindex, smiddle, sring;
-
-  float buffer[4*100];
-  int idx = 0;
+  float sthumb, sindex, smiddle, sring;
 
 	QueueHandle_t queue = (QueueHandle_t)arg;
 
@@ -171,27 +149,11 @@ void dataProcessThread(void *arg)
 			sindex = sqrtf(powf(index[0], 2) + powf(index[1], 2) + powf(index[2], 2));
 			smiddle = sqrtf(powf(middle[0], 2) + powf(middle[1], 2) + powf(middle[2], 2));
 			sring = sqrtf(powf(ring[0], 2) + powf(ring[1], 2) + powf(ring[2], 2));
-      /*
-      buffer[idx++] = sindex;
-      buffer[idx++] = smiddle;
-      buffer[idx++] = sring;
-      buffer[idx++] = slittle;
-      */
-      /*
-      if (idx > 400)
-      {
-        idx = 0;
-        for (int i = 0; i < 400; i+=4)
-        {
-          //HC06Printf("i:%f, m:%f, r:%f, l:%f\n", buffer[i]+8.0, buffer[i+1]+4.0, buffer[i+2], buffer[i+3]-4.0);
-          HC06Printf("@%f,%f,%f,%f\n", buffer[i], buffer[i+1], buffer[i+2], buffer[i+3]);
-        }
-      }
-      */
-      HC06Printf("@%d,%d,%d,%d\n", sthumb, sindex, smiddle, sring);
-			//printf("@%d,%d,%d,%d\n", sthumb, sindex, smiddle, sring);
-      //printf("i:%f, m:%f, r:%f, l:%f\n", sindex+8.0, smiddle+4.0, sring, slittle-4.0);
-			//printf("%d\n", millis()-prev_time);
+
+      //HC06Printf("@%f,%f,%f,%f\n", sthumb, sindex, smiddle, sring);
+
+			HC06Printf("%f,%f,%f,%f\n", sthumb+4.0, sindex+2.0, smiddle-2.0, sring-4.0);
+
 			prev_time=millis();
 			
 		}
