@@ -3,7 +3,7 @@ add_executable(${PRJ_NAME}
   
   ap/ap.cpp
 
-  ap/src/tap_detect_ap.c
+  ap/src/tap_detector.c
   ap/src/accelerometer_handler.c
   ap/src/filter.c
 
