@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define _DEF_LED1             0
 #define _DEF_LED2             1
