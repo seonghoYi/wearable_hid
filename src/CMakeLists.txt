@@ -5,6 +5,7 @@ add_executable(${PRJ_NAME}
 
   ap/src/tap_detect_ap.c
   ap/src/accelerometer_handler.c
+  ap/src/filter.c
 
   bsp/bsp.c
   common/core/qbuffer.c
@@ -30,7 +31,7 @@ add_executable(${PRJ_NAME}
 )
 
 
-target_include_directories(${PRJ_NAME} PRIVATE
+target_include_directories(${PRJ_NAME} PUBLIC
   ap
   ap/include
   bsp
