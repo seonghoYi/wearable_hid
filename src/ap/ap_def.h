@@ -6,6 +6,7 @@
 
 //#define _USE_AP_IMU_AP
 #define _USE_AP_TAP_DETECTOR
+#define _USE_AP_TAP_PROCESS_HANDLER
 #define _USE_AP_FILTER
 #define _USE_AP_ACCELEROMETER_HANDLER
 
