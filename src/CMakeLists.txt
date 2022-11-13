@@ -5,6 +5,7 @@ add_executable(${PRJ_NAME}
 
   ap/src/tap_detector.c
   ap/src/accelerometer_handler.c
+  ap/src/tap_process_handler.c
   ap/src/filter.c
 
   bsp/bsp.c
