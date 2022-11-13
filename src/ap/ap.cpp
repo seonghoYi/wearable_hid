@@ -191,6 +191,10 @@ static char double_tap_table[16] = {
 	'\0', '\b', '\0', 'b', 'k', 'q', 'x', 'z', '\n', 'v', 'j', 'f', 'y', 'g', 'w', ' '
 };
 
+static void motorTimerCallback(TimerHandle_t pxTimer)
+{
+	gpioPinWrite(_DEF_GPIO1, false);
+}
 
 void keyHandleThread(void *arg)
 {
@@ -202,6 +206,9 @@ void keyHandleThread(void *arg)
 	
 	QueueHandle_t tap_type_queue = (QueueHandle_t)arg;
 	bool is_double_tap = false;
+
+
+	TimerHandle_t motor_timer = xTimerCreate("motorTimer", pdMS_TO_TICKS(200), pdFALSE, NULL, motorTimerCallback);
 
 
 	while(1)
@@ -231,13 +238,18 @@ void keyHandleThread(void *arg)
 				key_code = double_tap_table[tap_code];
 			}
 
+
 			if (key_code != '\0')
 			{
+				gpioPinWrite(_DEF_GPIO1, true);
+				xTimerStart(motor_timer, 0);
 				HC06Write((uint8_t *)&key_code, 1);
 			}
 
 			if (key_code == '\b')
 			{
+				gpioPinWrite(_DEF_GPIO1, true);
+				xTimerStart(motor_timer, 0);
 				HC06Printf("\x1B[1P");
 			}
 		}
