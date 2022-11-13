@@ -3,7 +3,7 @@
 
 #ifdef _USE_HW_IMU
 
-cIMU::cIMU(uint8_t ch) : sensor(cMPU6050(ch)), tTime(0), cur_process_time(0), process_time(0)
+cIMU::cIMU() : tTime(0), cur_process_time(0), process_time(0)
 {
   for (int i = 0; i< 3; i++)
   {

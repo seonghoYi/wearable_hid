@@ -29,14 +29,13 @@ class cMPU6050
 
 
   public:
-    cMPU6050(uint8_t ch);
+    cMPU6050();
 
     bool begin(void);
     void gyroGetData(void);
     void accGetData(void);
     bool accGetCaliDone(void);
     bool gyroGetCaliDone(void);
-    uint8_t dev_ch;
   private:
     
     uint8_t i2c_ch;

@@ -37,7 +37,7 @@ class cIMU
     int16_t gyroData[3];
 
   public:
-    cIMU(uint8_t ch);
+    cIMU();
 
     bool begin(uint32_t hz);
     uint32_t update(void);

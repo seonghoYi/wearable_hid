@@ -7,7 +7,7 @@
 #define MPU6050_I2C_ADDRESS 0x68 << 1
 
 
-cMPU6050::cMPU6050(uint8_t ch) : dev_ch(ch)
+cMPU6050::cMPU6050()
 {
   b_connected = false;
   i2c_addr = MPU6050_I2C_ADDRESS;
@@ -17,22 +17,9 @@ bool cMPU6050::init()
 {
   bool ret = true;
   uint8_t data = 0;
-  uint8_t ch = dev_ch;
-  //dev_ch = ch;
-  
 
-  switch(ch)
-  {
-    case _DEF_MPU6050_1:
-      i2c_ch = _DEF_I2C1;
-      ret &= i2cBegin(i2c_ch, 400);
-
-    break;
-    break;
-    default:
-      ret = false;
-    break;
-  }
+  i2c_ch = _DEF_I2C1;
+  ret &= i2cBegin(i2c_ch, 400);
 
   //mpu6050 reset
   ret &= regWrite(MPU6050_PWR_MGMT_1, MPU6050_RESET);
@@ -263,48 +250,24 @@ void cMPU6050::gyroCalibration()
 bool cMPU6050::regWrite(uint16_t reg_addr, uint8_t data)
 {
   bool ret = true;
-  uint8_t ch = dev_ch;
 
-  switch(ch)
-  {
-    case _DEF_MPU6050_1:
-      ret &= i2cMemWrite(i2c_ch, i2c_addr, reg_addr, 1, data);
-    break;
-    default:
-      ret = false;    
-  }
+  ret &= i2cMemWrite(i2c_ch, i2c_addr, reg_addr, 1, data);
   return ret;
 }
 
 bool cMPU6050::regRead(uint16_t reg_addr, uint8_t *p_data)
 {
   bool ret = true;
-  uint8_t ch = dev_ch;
 
-  switch(ch)
-  {
-    case _DEF_MPU6050_1:
-      ret &= i2cMemRead(i2c_ch, i2c_addr, reg_addr, 1, p_data);
-    break;
-    default:
-      ret = false;    
-  }
+  ret &= i2cMemRead(i2c_ch, i2c_addr, reg_addr, 1, p_data);
   return ret;
 }
 
 bool cMPU6050::regReads(uint16_t reg_addr, uint8_t *p_data, uint16_t size)
 {
   bool ret = true;
-  uint8_t ch = dev_ch;
 
-  switch(ch)
-  {
-    case _DEF_MPU6050_1:
-      ret &= i2cMemReads(i2c_ch, i2c_addr, reg_addr, 1, p_data, size);
-    break;
-    default:
-      ret = false;    
-  }
+  ret &= i2cMemReads(i2c_ch, i2c_addr, reg_addr, 1, p_data, size);
   return ret;
 }
 

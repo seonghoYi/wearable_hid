@@ -7,15 +7,7 @@
 #ifdef _USE_HW_IMU
 
 
-//static cIMU imu(_DEF_MPU6050_1);
-
-cIMU imu_tbl[IMU_MAX_CH] = {
-  cIMU(_DEF_MPU6050_1), 
-  //cIMU(_DEF_MPU6050_2), 
-  //cIMU(_DEF_MPU6050_3), 
-  //cIMU(_DEF_MPU6050_4), 
-  //cIMU(_DEF_MPU6050_5),
-};
+static cIMU imu;
 
 static void cliIMU(cli_args_t *args);
 
@@ -24,53 +16,53 @@ bool imuInit(void)
   bool ret = true;
 
 #ifdef _USE_HW_CLI
-  //cliAdd("IMU", cliIMU);
+  cliAdd("IMU", cliIMU);
 #endif
 
 
   return ret;
 }
 
-bool imuBegin(uint8_t ch, uint32_t update_hz)
+bool imuBegin(uint32_t update_hz)
 {
-  bool ret = imu_tbl[ch].begin(update_hz);
+  bool ret = imu.begin(update_hz);
   return ret;
 }
 
 
-uint32_t imuUpdate(uint8_t ch)
+uint32_t imuUpdate()
 {
-  uint32_t ret = imu_tbl[ch].update();
+  uint32_t ret = imu.update();
 
   return ret;
 }
 
 
-void imuGetRPY(uint8_t ch, float (&rpy)[3])
+void imuGetRPY(float (&rpy)[3])
 {
-  imu_tbl[ch].get_rpy(rpy);
+  imu.get_rpy(rpy);
 }
 
-void imuGetQuaternion(uint8_t ch, float (&quat)[4])
+void imuGetQuaternion(float (&quat)[4])
 {
-  imu_tbl[ch].get_quat(quat);
+  imu.get_quat(quat);
 }
 
-void imuGetAcc(uint8_t ch, float (&acc)[3])
+void imuGetAcc(float (&acc)[3])
 {
-  imu_tbl[ch].get_acc(acc);
+  imu.get_acc(acc);
 }
 
-void imuGetGyro(uint8_t ch, float (&gyro)[3])
+void imuGetGyro(float (&gyro)[3])
 {
-  imu_tbl[ch].get_gyro(gyro);
+  imu.get_gyro(gyro);
 }
 
 
 
 #ifdef _USE_HW_CLI
 
-/*
+
 void cliIMU(cli_args_t *args)
 {
   bool ret = true;
@@ -168,7 +160,7 @@ void cliIMU(cli_args_t *args)
     cliPrintf("imu show gyro\r\n");
   }
 }
-*/
+
 
 #endif
 
