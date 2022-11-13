@@ -31,28 +31,25 @@ typedef struct
   tapDetectorStateTypedef_t state;
   
   float acc;
-  float prev_acc[3];
-  float diff_acc[3];
-  float performance_index;
-  float tapped_pi;
-
   float threshold;
+  float acc_sum;
+  int sum_count;
 
   uint32_t tap_count;
-
-  uint32_t begin_tick;
-  uint32_t event_start_tick;
   uint32_t thresh_high_tick;
   uint32_t thresh_low_tick;
 
-} tapDetectorObjTypedef_t;
+} tapDetectorHandleTypedef_t;
 
 
+typedef struct
+{
+  bool is_tapped;
+  float intensity_proportion;
+} tapDetectorStatusTyepdef_t;
 
-void tapDetectorInit(tapDetectorObjTypedef_t *p_tap_obj, float threshold);
-bool tapDetectorUpdate(tapDetectorObjTypedef_t *p_tap_obj, float acc_data);
-
-
+void tapDetectorInit(tapDetectorHandleTypedef_t *p_tap_handle, float threshold);
+tapDetectorStatusTyepdef_t tapDetectorUpdate(tapDetectorHandleTypedef_t *p_tap_handle, float acc_data);
 
 #endif
 
