@@ -94,9 +94,9 @@ void tapDetectThread(void *arg)
 	accelerometerHandlerInit();
 
 	tapDetectorInit(&tap_handle[0], 0.9f);
-	tapDetectorInit(&tap_handle[1], 1.2f);
-	tapDetectorInit(&tap_handle[2], 1.17f);
-	tapDetectorInit(&tap_handle[3], 1.1f);
+	tapDetectorInit(&tap_handle[1], 1.3f);
+	tapDetectorInit(&tap_handle[2], 1.35f);
+	tapDetectorInit(&tap_handle[3], 1.0f);
 
 	tapProcessHandlerCreate(&tap_process_handle);
 
@@ -226,8 +226,8 @@ void keyHandleThread(void *arg)
 
 			tap_code = (is_tapped[0]<<3) | (is_tapped[1]<<2) | (is_tapped[2]<<1) | (is_tapped[3]<<0);
 
-			printf("\n  %d     %d     %d     %d\n", (tap_data>>0)&0x03, (tap_data>>2)&0x03, (tap_data>>4)&0x03, (tap_data>>6)&0x03);
-			printf("%04b\n", tap_code);
+			//printf("\n  %d     %d     %d     %d\n", (tap_data>>0)&0x03, (tap_data>>2)&0x03, (tap_data>>4)&0x03, (tap_data>>6)&0x03);
+			//printf("%04b\n", tap_code);
 
 			if (is_double_tap == false)
 			{

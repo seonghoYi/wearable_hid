@@ -85,7 +85,7 @@ tapDetectorStatusTyepdef_t tapDetectorUpdate(tapDetectorHandleTypedef_t *p_tap_h
   {
     if (p_tap_handle->thresh_low_tick > 5)
     {
-      if (p_tap_handle->thresh_high_tick > 0 && p_tap_handle->thresh_high_tick < 5)
+      if (p_tap_handle->thresh_high_tick > 0 && p_tap_handle->thresh_high_tick < 20)
       {
         p_tap_handle->tap_count = 1;
         ret.is_tapped = true;

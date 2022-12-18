@@ -36,7 +36,7 @@ bool tapDetectorProcess(tapProcessHandlerTypedef_t *p_handle, uint32_t *ret_flag
   }
   else if (p_handle->state == TAP_PROCESS_STATE_TAP_DETECTED)
   {
-    if (millis()-p_handle->tapped_time >= 200)
+    if (millis()-p_handle->tapped_time >= 300)
     {
       //printf("1 expired\n");
       p_handle->state = TAP_PROCESS_STATE_EXPIRED;
@@ -67,7 +67,7 @@ bool tapDetectorProcess(tapProcessHandlerTypedef_t *p_handle, uint32_t *ret_flag
   }
   else if (p_handle->state==TAP_PROCESS_STATE_TAP_DOUBLE_TAP)
   {
-    if (millis()-p_handle->double_tap_time >= 100)
+    if (millis()-p_handle->double_tap_time >= 200)
     {
       //printf("2 expired\n");
       for (int i = 0; i < 16; i++)
